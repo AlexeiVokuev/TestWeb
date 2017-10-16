@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_testweb" default="compile.module.testweb">
+  <dirname property="module.testweb.basedir" file="${ant.file.module_testweb}"/>
+  
+  <property name="module.jdk.home.testweb" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.testweb" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.testweb" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.testweb" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="testweb.output.dir" value="${module.testweb.basedir}/out/production/TestWeb"/>
+  <property name="testweb.testoutput.dir" value="${module.testweb.basedir}/out/test/TestWeb"/>
+  
+  <path id="testweb.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="testweb.module.production.classpath">
+    <path refid="${module.jdk.classpath.testweb}"/>
+    <path refid="library.tomcat_9.0.0.m26.classpath"/>
+  </path>
+  
+  <path id="testweb.runtime.production.module.classpath">
+    <pathelement location="${testweb.output.dir}"/>
+  </path>
+  
+  <path id="testweb.module.classpath">
+    <path refid="${module.jdk.classpath.testweb}"/>
+    <pathelement location="${testweb.output.dir}"/>
+    <path refid="library.tomcat_9.0.0.m26.classpath"/>
+  </path>
+  
+  <path id="testweb.runtime.module.classpath">
+    <pathelement location="${testweb.testoutput.dir}"/>
+    <pathelement location="${testweb.output.dir}"/>
+    <path refid="library.tomcat_9.0.0.m26.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.testweb">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.testweb">
+    <patternset refid="excluded.from.module.testweb"/>
+  </patternset>
+  
+  <path id="testweb.module.sourcepath">
+    <dirset dir="${module.testweb.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.testweb" depends="compile.module.testweb.production,compile.module.testweb.tests" description="Compile module TestWeb"/>
+  
+  <target name="compile.module.testweb.production" depends="register.custom.compilers" description="Compile module TestWeb; production classes">
+    <mkdir dir="${testweb.output.dir}"/>
+    <javac2 destdir="${testweb.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.testweb}/javac">
+      <compilerarg line="${compiler.args.testweb}"/>
+      <bootclasspath refid="testweb.module.bootclasspath"/>
+      <classpath refid="testweb.module.production.classpath"/>
+      <src refid="testweb.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.testweb"/>
+    </javac2>
+    
+    <copy todir="${testweb.output.dir}">
+      <fileset dir="${module.testweb.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.testweb.tests" depends="register.custom.compilers,compile.module.testweb.production" description="compile module TestWeb; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.testweb" description="cleanup module">
+    <delete dir="${testweb.output.dir}"/>
+    <delete dir="${testweb.testoutput.dir}"/>
+  </target>
+</project>
